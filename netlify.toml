@@ -1,0 +1,13 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# SPA fallback: any path the static bundle doesn't recognize falls back
+# to index.html so client-side React Router can take over.
+# Listed AFTER the function configs (which declare their own path:)
+# so /api/bgg/* hits the functions, not this catch-all.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
