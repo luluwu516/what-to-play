@@ -59,13 +59,37 @@ export function GameCard({ game }: { game: Game }) {
             Delete
           </button>
         </div>
-        {editing && (
-          <EditForm
-            game={game}
-            onSaved={() => setEditing(false)}
-          />
-        )}
       </div>
+
+      {/* Edit happens in an overlay so the collection grid never reflows /
+          jumps when a card expands. Bottom-sheet on mobile, centered on
+          desktop — full width either way, so the form has room. */}
+      {editing && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-cocoa/40 sm:p-4"
+          onClick={() => setEditing(false)}
+        >
+          <div
+            className="card-sticker w-full sm:max-w-md max-h-[90vh] overflow-auto p-4 rounded-b-none sm:rounded-3xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <h3 className="font-bold leading-tight line-clamp-1">
+                Edit “{game.title}”
+              </h3>
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={() => setEditing(false)}
+                className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-cocoa/60 hover:bg-cocoa/10 active:bg-cocoa/20"
+              >
+                ✕
+              </button>
+            </div>
+            <EditForm game={game} onSaved={() => setEditing(false)} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -95,10 +119,10 @@ function EditForm({ game, onSaved }: { game: Game; onSaved: () => void }) {
     onSaved();
   }
 
-  const inputClass = "rounded-lg border-2 border-cocoa/40 px-2 py-1 bg-white";
+  const inputClass = "rounded-lg border-2 border-cocoa/40 px-2 py-2 bg-white";
 
   return (
-    <div className="mt-2 p-2 rounded-xl bg-cream/60 border-2 border-cocoa/30 flex flex-col gap-2 text-xs">
+    <div className="flex flex-col gap-3 text-sm">
       <label className="flex flex-col gap-1">
         <span className="font-bold">Title</span>
         <input
@@ -118,7 +142,7 @@ function EditForm({ game, onSaved }: { game: Game; onSaved: () => void }) {
           autoComplete="off"
         />
       </label>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <label className="flex flex-col gap-1">
           <span className="font-bold">Min</span>
           <input
@@ -170,9 +194,9 @@ function EditForm({ game, onSaved }: { game: Game; onSaved: () => void }) {
         type="button"
         onClick={save}
         disabled={saving}
-        className="btn-sticker active:btn-sticker-active bg-tangerine self-start text-xs"
+        className="btn-sticker active:btn-sticker-active bg-tangerine self-end"
       >
-        Save
+        {saving ? "Saving…" : "Save"}
       </button>
     </div>
   );
