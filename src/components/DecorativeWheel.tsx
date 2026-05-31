@@ -1,3 +1,6 @@
+// SIZE is just the SVG viewBox/coordinate space; the rendered size is driven
+// by the host element's responsive width (see `wheel-host` classes below), so
+// the wheel shrinks on phones to keep the "Spin" button above the fold.
 const SIZE = 280;
 const RADIUS = SIZE / 2 - 8;
 const CX = SIZE / 2;
@@ -18,10 +21,7 @@ export function DecorativeWheel() {
   const n = COLORS.length;
   const slice = 360 / n;
   return (
-    <div
-      className="wheel-host relative cursor-pointer"
-      style={{ width: SIZE, height: SIZE }}
-    >
+    <div className="wheel-host relative cursor-pointer w-48 sm:w-72 aspect-square">
       <div
         aria-hidden
         className="absolute rounded-full border-2 border-cocoa bg-white shadow-[5px_5px_0_0_var(--cocoa)]"
@@ -39,10 +39,8 @@ export function DecorativeWheel() {
         }}
       />
       <svg
-        width={SIZE}
-        height={SIZE}
         viewBox={`0 0 ${SIZE} ${SIZE}`}
-        className="wheel-spin relative z-10"
+        className="wheel-spin relative z-10 w-full h-full"
       >
         {Array.from({ length: n }, (_, i) => {
           const start = -90 + i * slice;

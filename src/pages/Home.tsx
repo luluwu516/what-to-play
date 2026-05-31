@@ -8,12 +8,12 @@ export function Home() {
   const recent = useLiveQuery(async () => (await listGames()).slice(0, 5), []);
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 gap-8">
+    <main className="flex-1 flex flex-col items-center justify-center px-6 py-8 sm:py-12 gap-6 sm:gap-8">
       <header className="text-center flex flex-col items-center gap-2">
         <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight">
           Well, Well, Wheel...
         </h1>
-        <p className="text-lg text-cocoa/70">
+        <p className="text-sm sm:text-lg text-cocoa/70">
           Can&apos;t decide tonight? Let the wheel pick.
         </p>
       </header>
