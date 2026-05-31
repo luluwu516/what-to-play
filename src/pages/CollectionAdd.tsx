@@ -91,6 +91,8 @@ export function CollectionAdd() {
       <PageHeader
         title="Add a game"
         subtitle="Search BoardGameGeek to auto-fill, or enter details manually"
+        backTo="/collection"
+        backLabel="Collection"
       />
 
       <BGGSearchBox onPick={pickFromBGG} />

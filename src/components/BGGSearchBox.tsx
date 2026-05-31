@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { searchBGG, type BggSearchHit } from "@/lib/bgg-client";
+import { SearchInput } from "./SearchInput";
 
+// Search fires only when the user presses the Search button (or Enter) —
+// never on every keystroke — so we don't hammer the BGG API.
 export function BGGSearchBox({
   onPick,
 }: {
@@ -10,51 +13,56 @@ export function BGGSearchBox({
   const [hits, setHits] = useState<BggSearchHit[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [searched, setSearched] = useState(false);
 
-  useEffect(() => {
-    if (!q.trim()) return;
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(async () => {
-      setLoading(true);
-      try {
-        const results = await searchBGG(q);
-        setHits(results);
-        setOpen(true);
-      } catch {
-        setHits([]);
-      } finally {
-        setLoading(false);
-      }
-    }, 350);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [q]);
-
-  function handleInput(next: string) {
-    setQ(next);
-    if (!next.trim()) {
+  async function runSearch() {
+    const term = q.trim();
+    if (!term || loading) return;
+    setLoading(true);
+    setSearched(true);
+    try {
+      const results = await searchBGG(term);
+      setHits(results);
+    } catch {
       setHits([]);
-      setOpen(false);
+    } finally {
+      setLoading(false);
+      setOpen(true);
     }
+  }
+
+  function clear() {
+    setQ("");
+    setHits([]);
+    setOpen(false);
+    setSearched(false);
   }
 
   return (
     <div className="relative">
-      <input
-        value={q}
-        onChange={(e) => handleInput(e.target.value)}
-        onFocus={() => hits.length > 0 && setOpen(true)}
-        placeholder="Search BoardGameGeek (e.g. Wingspan)"
-        autoComplete="off"
-        className="w-full px-4 py-3 rounded-2xl border-2 border-cocoa bg-white text-lg shadow-[4px_4px_0_0_var(--cocoa)] focus:outline-none focus:ring-4 focus:ring-lavender/50"
-      />
-      {loading && (
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-cocoa/60">
-          Searching…
-        </div>
-      )}
+      <div className="flex gap-2">
+        <SearchInput
+          value={q}
+          onChange={(v) => {
+            setQ(v);
+            if (!v.trim()) setOpen(false);
+          }}
+          onSubmit={runSearch}
+          onClear={clear}
+          placeholder="Search BoardGameGeek (e.g. Wingspan)"
+          className="flex-1"
+          inputClassName="px-4 py-3 rounded-2xl border-2 border-cocoa bg-white text-lg shadow-[4px_4px_0_0_var(--cocoa)] focus:outline-none focus:ring-4 focus:ring-lavender/50"
+        />
+        <button
+          type="button"
+          onClick={runSearch}
+          disabled={loading || !q.trim()}
+          className="btn-sticker active:btn-sticker-active bg-lavender px-5 shrink-0 disabled:opacity-50"
+        >
+          {loading ? "…" : "Search"}
+        </button>
+      </div>
+
       {open && hits.length > 0 && (
         <ul className="absolute z-20 left-0 right-0 mt-2 max-h-80 overflow-auto card-sticker p-1">
           {hits.map((h) => (
@@ -63,9 +71,7 @@ export function BGGSearchBox({
                 type="button"
                 onClick={() => {
                   onPick(h);
-                  setOpen(false);
-                  setQ("");
-                  setHits([]);
+                  clear();
                 }}
                 className="w-full text-left px-3 py-2 rounded-xl hover:bg-cream flex justify-between gap-2"
               >
@@ -75,6 +81,10 @@ export function BGGSearchBox({
             </li>
           ))}
         </ul>
+      )}
+
+      {open && !loading && searched && hits.length === 0 && (
+        <p className="mt-2 text-sm text-cocoa/60">No matches on BoardGameGeek.</p>
       )}
     </div>
   );
