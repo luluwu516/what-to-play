@@ -77,7 +77,9 @@ export function Wheel({
   return (
     <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 w-full justify-center">
       <div className="flex flex-col items-center gap-6">
-        <div className="relative" style={{ width: SIZE, height: SIZE }}>
+        {/* Size is responsive: ~72vw on phones (so the Spin button stays in
+            view) capped at 420px on larger screens. SVG scales via viewBox. */}
+        <div className="relative w-[min(72vw,420px)] aspect-square">
           <div
             aria-hidden
             className="absolute rounded-full border-[3px] border-cocoa bg-white shadow-[6px_6px_0_0_var(--cocoa)]"
@@ -95,12 +97,10 @@ export function Wheel({
             }}
           />
           <motion.svg
-            width={SIZE}
-            height={SIZE}
             viewBox={`0 0 ${SIZE} ${SIZE}`}
             animate={controls}
             style={{ originX: 0.5, originY: 0.5 }}
-            className="relative z-10"
+            className="relative z-10 w-full h-full"
           >
             {expanded.map((slice, i) => {
               const start = -90 + i * sliceDeg;

@@ -81,9 +81,6 @@ export function Play() {
 
       {step === "spin" && (
         <div className="flex flex-col items-center gap-6">
-          <p className="text-cocoa/70">
-            {wheelSlots.length} games on the wheel · {totalSlices(wheelSlots)} slices after weight
-          </p>
           <Wheel slots={wheelSlots} onResult={handleWinner} />
           <button
             type="button"
@@ -107,10 +104,6 @@ export function Play() {
       )}
     </main>
   );
-}
-
-function totalSlices(slots: WheelSlot[]): number {
-  return slots.reduce((acc, s) => acc + Math.round(s.weight * 2), 0);
 }
 
 function FilterView({
@@ -245,17 +238,25 @@ function SelectView({
           const selected = slots.has(g.id);
           const weight = slots.get(g.id) ?? (defaultWeightFor(g) as AllowedWeight);
           return (
+            // The whole card is the toggle target (not just the image). The
+            // weight stepper stops propagation so tweaking it doesn't deselect.
             <div
               key={g.id}
-              className={`card-sticker overflow-hidden flex flex-col transition ${
+              role="button"
+              tabIndex={0}
+              aria-pressed={selected}
+              onClick={() => toggle(g)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggle(g);
+                }
+              }}
+              className={`card-sticker overflow-hidden flex flex-col cursor-pointer transition ${
                 selected ? "ring-4 ring-tangerine/70" : ""
               }`}
             >
-              <button
-                type="button"
-                onClick={() => toggle(g)}
-                className="relative block w-full aspect-square bg-cream overflow-hidden"
-              >
+              <div className="relative w-full aspect-square bg-cream overflow-hidden">
                 <GameCover
                   src={g.image_url}
                   alt={g.title}
@@ -269,7 +270,7 @@ function SelectView({
                     ✓
                   </div>
                 )}
-              </button>
+              </div>
               <div className="p-3 flex flex-col gap-2">
                 <h3 className="font-bold leading-tight line-clamp-2">{g.title}</h3>
                 <div className="text-xs text-cocoa/70 flex gap-2">
@@ -277,10 +278,12 @@ function SelectView({
                   <span>⏱ {g.playing_time}m</span>
                 </div>
                 {selected && (
-                  <WeightStepper
-                    value={weight}
-                    onChange={(w) => setWeight(g.id, w)}
-                  />
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <WeightStepper
+                      value={weight}
+                      onChange={(w) => setWeight(g.id, w)}
+                    />
+                  </div>
                 )}
               </div>
             </div>
@@ -291,18 +294,22 @@ function SelectView({
         <button
           type="button"
           onClick={onBack}
+          aria-label="Back to filters"
           className="btn-sticker active:btn-sticker-active bg-white"
         >
-          ← Filters
+          <span aria-hidden>←</span>
+          <span className="hidden sm:inline"> Filters</span>
         </button>
         <span className="font-bold">{slots.size} selected</span>
         <button
           type="button"
           onClick={onNext}
           disabled={slots.size < 2}
+          aria-label="To the wheel"
           className="btn-sticker active:btn-sticker-active bg-tangerine disabled:opacity-50"
         >
-          To the wheel →
+          <span className="hidden sm:inline">To the wheel </span>
+          <span aria-hidden>→</span>
         </button>
       </div>
     </div>
