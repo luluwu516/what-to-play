@@ -1,6 +1,6 @@
 {
-  "name": "Well Well Wheel",
-  "short_name": "Well Wheel",
+  "name": "What To Play?",
+  "short_name": "What To Play",
   "description": "Can't decide tonight? Let the wheel pick.",
   "start_url": "/",
   "display": "standalone",

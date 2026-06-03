@@ -86,7 +86,7 @@ export function Collection() {
     const blob = await exportAll();
     const json = JSON.stringify(blob, null, 2);
     const stamp = new Date().toISOString().slice(0, 10);
-    const filename = `well-well-wheel-${stamp}.json`;
+    const filename = `what-to-play-${stamp}.json`;
     const count = `${blob.games.length} game${blob.games.length === 1 ? "" : "s"}`;
 
     // On mobile, hand the file to the OS share sheet (Drive, AirDrop, Mail…)
@@ -94,7 +94,7 @@ export function Collection() {
     const file = new File([json], filename, { type: "application/json" });
     if (navigator.canShare?.({ files: [file] })) {
       try {
-        await navigator.share({ files: [file], title: "Well Well Wheel backup" });
+        await navigator.share({ files: [file], title: "What To Play backup" });
         setStatus(`Shared backup of ${count}.`);
         return;
       } catch (e) {

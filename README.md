@@ -1,4 +1,4 @@
-# Well Well Wheel v2 🎡
+# What To Play? 🎲
 
 Local-first picker for tonight's board game. Each visitor's collection
 lives in their **own browser** (IndexedDB) — there is no shared backend,
@@ -26,7 +26,7 @@ to proxy BoardGameGeek's authenticated API.
 
 ```bash
 git clone <repo>
-cd well-well-wheel-v2
+cd what-to-play
 npm install
 cp .env.example .env.local      # then paste your BGG token
 npm run dev                     # http://localhost:5173
