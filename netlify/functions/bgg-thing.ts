@@ -1,6 +1,8 @@
 import { fetchGameDetail } from "../../src/lib/bgg-core";
+import { isSameOrigin, forbidden, isValidBggId } from "../shared/guard";
 
 export default async (req: Request): Promise<Response> => {
+  if (!isSameOrigin(req)) return forbidden();
   const token = process.env.BGG_API_TOKEN;
   if (!token) {
     return Response.json(
@@ -10,8 +12,8 @@ export default async (req: Request): Promise<Response> => {
   }
   const url = new URL(req.url);
   const id = Number(url.searchParams.get("id"));
-  if (!Number.isFinite(id)) {
-    return Response.json({ error: "id query param required" }, { status: 400 });
+  if (!isValidBggId(id)) {
+    return Response.json({ error: "valid id query param required" }, { status: 400 });
   }
   try {
     const detail = await fetchGameDetail(id, token);

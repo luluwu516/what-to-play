@@ -46,6 +46,11 @@ export function Play() {
 
   return (
     <main className="flex-1 max-w-5xl w-full mx-auto px-6 py-8">
+      {/* Persistent live region (survives step changes) so screen readers hear
+          the wheel result, which is otherwise conveyed only visually. */}
+      <p className="sr-only" role="status" aria-live="polite">
+        {step === "result" && winner ? `Tonight you'll play ${winner.title}` : ""}
+      </p>
       <PageHeader
         title={
           step === "filter"

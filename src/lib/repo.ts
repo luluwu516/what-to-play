@@ -127,7 +127,7 @@ export async function importAll(
   return { added, skipped };
 }
 
-function parseImport(blob: unknown): GameRecord[] {
+export function parseImport(blob: unknown): GameRecord[] {
   if (!blob || typeof blob !== "object") throw new Error("invalid file");
   const b = blob as { games?: unknown };
   if (!Array.isArray(b.games)) throw new Error("missing games[]");

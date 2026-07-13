@@ -23,6 +23,8 @@ export function GameCover({
     <img
       src={src}
       alt={alt}
+      loading="lazy"
+      decoding="async"
       onError={() => setErrored(true)}
       className={`block object-cover object-center select-none ${className}`}
     />

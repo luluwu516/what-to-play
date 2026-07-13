@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv, type Connect } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { VitePWA } from "vite-plugin-pwa";
 import path from "node:path";
 import { searchGames, fetchGameDetail } from "./src/lib/bgg-core";
 
@@ -52,7 +53,35 @@ export default defineConfig(({ mode }) => {
   };
 
   return {
-    plugins: [react(), tailwindcss(), bggDevProxy],
+    plugins: [
+      react(),
+      tailwindcss(),
+      bggDevProxy,
+      // App-shell offline support. The collection lives in IndexedDB and works
+      // fully offline; this precaches the HTML/JS/CSS so the app opens with no
+      // network. BGG lookups are the one online-only feature and degrade to
+      // manual entry when offline.
+      VitePWA({
+        registerType: "autoUpdate",
+        injectRegister: "auto",
+        // We already ship a hand-written public/site.webmanifest linked from
+        // index.html — don't let the plugin generate a second, conflicting one.
+        manifest: false,
+        workbox: {
+          globPatterns: ["**/*.{js,css,html,ico,png,svg,webmanifest}"],
+          // Offline SPA navigations fall back to the cached index.html, except
+          // BGG proxy calls, which must always hit the network.
+          navigateFallback: "/index.html",
+          navigateFallbackDenylist: [/^\/api\//],
+          runtimeCaching: [
+            {
+              urlPattern: /^\/api\/bgg\//,
+              handler: "NetworkOnly",
+            },
+          ],
+        },
+      }),
+    ],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

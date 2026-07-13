@@ -1,9 +1,9 @@
 import { motion, useAnimationControls } from "framer-motion";
 import { useMemo, useState } from "react";
 import type { Game } from "@/lib/types";
-import type { AllowedWeight } from "@/lib/weight";
+import { expandSlots, type Slice, type WheelSlot } from "@/lib/wheel";
 
-export type WheelSlot = { game: Game; weight: AllowedWeight };
+export type { WheelSlot };
 
 const SLICE_COLORS = [
   "#FFB6C1", // berry
@@ -18,8 +18,6 @@ const RADIUS = SIZE / 2 - 8;
 const CX = SIZE / 2;
 const CY = SIZE / 2;
 
-type Slice = { game: Game; slotIndex: number };
-
 export function Wheel({
   slots,
   onResult,
@@ -31,21 +29,7 @@ export function Wheel({
   const [spinning, setSpinning] = useState(false);
   const [angle, setAngle] = useState(0);
 
-  // Round-robin expand so interleaved (A,B,A,B,B,B) not grouped.
-  const expanded = useMemo<Slice[]>(() => {
-    const counts = slots.map((s) => Math.round(s.weight * 2));
-    const total = counts.reduce((a, b) => a + b, 0);
-    const out: Slice[] = [];
-    while (out.length < total) {
-      for (let i = 0; i < counts.length; i++) {
-        if (counts[i] > 0) {
-          out.push({ game: slots[i].game, slotIndex: i });
-          counts[i]--;
-        }
-      }
-    }
-    return out;
-  }, [slots]);
+  const expanded = useMemo<Slice[]>(() => expandSlots(slots), [slots]);
 
   const sliceDeg = expanded.length > 0 ? 360 / expanded.length : 0;
 

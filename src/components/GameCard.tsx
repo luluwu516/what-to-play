@@ -8,6 +8,7 @@ import type { Game } from "@/lib/types";
 // IndexedDB changes and re-renders automatically — no callbacks needed.
 export function GameCard({ game }: { game: Game }) {
   const [editing, setEditing] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [busy, setBusy] = useState(false);
 
   async function dismissNew() {
@@ -16,11 +17,10 @@ export function GameCard({ game }: { game: Game }) {
     setBusy(false);
   }
 
-  async function remove() {
-    if (!confirm(`Delete "${game.title}"?`)) return;
+  async function confirmDelete() {
     setBusy(true);
     await deleteGame(game.id);
-    setBusy(false);
+    // No need to reset busy/confirming: deleting the row unmounts this card.
   }
 
   return (
@@ -52,7 +52,7 @@ export function GameCard({ game }: { game: Game }) {
           </button>
           <button
             type="button"
-            onClick={remove}
+            onClick={() => setConfirmingDelete(true)}
             disabled={busy}
             className="text-xs btn-sticker active:btn-sticker-active px-3 py-1 bg-berry"
           >
@@ -87,6 +87,48 @@ export function GameCard({ game }: { game: Game }) {
               </button>
             </div>
             <EditForm game={game} onSaved={() => setEditing(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirmation — same overlay pattern as Edit, replacing the
+          native confirm() so it's styled and consistent inside an installed PWA. */}
+      {confirmingDelete && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Delete ${game.title}`}
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-cocoa/40 sm:p-4"
+          onClick={() => !busy && setConfirmingDelete(false)}
+        >
+          <div
+            className="card-sticker w-full sm:max-w-sm p-5 rounded-b-none sm:rounded-3xl flex flex-col gap-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-bold text-lg leading-tight">
+              Delete “{game.title}”?
+            </h3>
+            <p className="text-sm text-cocoa/70">
+              This removes it from your collection. You can’t undo this.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(false)}
+                disabled={busy}
+                className="btn-sticker active:btn-sticker-active bg-white px-4 py-2 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={busy}
+                className="btn-sticker active:btn-sticker-active bg-berry px-4 py-2 disabled:opacity-50"
+              >
+                {busy ? "Deleting…" : "Delete"}
+              </button>
+            </div>
           </div>
         </div>
       )}

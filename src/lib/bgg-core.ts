@@ -113,7 +113,7 @@ function pickPrimaryName(names: BggNameEntry[] | undefined): string | null {
   return (primary ?? names[0])["@_value"] ?? null;
 }
 
-function relevance(title: string, query: string): number {
+export function relevance(title: string, query: string): number {
   const t = title.toLowerCase();
   const q = query.toLowerCase();
   if (t === q) return 10000;
