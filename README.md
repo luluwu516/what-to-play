@@ -95,9 +95,9 @@ flowchart TD
     UI -->|"fetch /api/bgg/*<br/>(online only)"| FN
     FN -->|"Authorization: Bearer &lt;token&gt;<br/>202-aware retry"| BGG
 
-    style IDB fill:#B9F3DC,stroke:#3a3a3a
-    style FN fill:#C5B9FF,stroke:#3a3a3a
-    style SW fill:#FFAA77,stroke:#3a3a3a
+    style IDB fill:#B9F3DC,stroke:#3a3a3a,color:#000000
+    style FN fill:#C5B9FF,stroke:#3a3a3a,color:#000000
+    style SW fill:#FFAA77,stroke:#3a3a3a,color:#000000
 ```
 
 **How the modules collaborate**
