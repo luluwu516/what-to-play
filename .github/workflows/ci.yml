@@ -26,8 +26,14 @@ jobs:
           node-version: 20
           cache: npm
 
+      # Use `npm install`, not `npm ci`. The lock file is generated on macOS,
+      # where the wasm fallback for @tailwindcss/oxide is skipped; its optional
+      # peer deps (@emnapi/*) then differ from what npm resolves on the Linux
+      # runner, so `npm ci`'s strict check fails on packages the native build
+      # never uses. `npm install` still honors the lock and installs the right
+      # native binaries.
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Lint
         run: npm run lint
