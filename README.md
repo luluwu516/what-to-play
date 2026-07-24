@@ -6,9 +6,21 @@
 
 > A **local-first Progressive Web App** that settles _"what should we play tonight?"_ for board-game groups. Every player curates a private collection in their own browser, and a **weighted probability wheel** makes the call. No accounts, no backend, works offline.
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white" alt="Vite 8" />
+  <img src="https://img.shields.io/badge/React-19-149eca?logo=react" alt="React 19" />
+  <img src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white" alt="TypeScript strict" />
+  <img src="https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss&logoColor=white" alt="Tailwind 4" />
+  <img src="https://img.shields.io/badge/IndexedDB-Dexie-e0218a" alt="IndexedDB via Dexie" />
+  <img src="https://img.shields.io/badge/PWA-offline--first-5a0fc8?logo=pwa&logoColor=white" alt="PWA offline-first" />
+  <img src="https://img.shields.io/badge/Netlify-edge%20functions-00c7b7?logo=netlify&logoColor=white" alt="Netlify edge functions" />
+  <img src="https://github.com/luluwu516/what-to-play/actions/workflows/ci.yml/badge.svg" alt="CI status" />
+</p>
+
 ![Demo Screenshots](./img/what-to-play-demo.png)
 
 <p align="center">
+  <a href="#key-features">Features</a> ·
   <a href="#tech-stack--architecture">Architecture</a> ·
   <a href="#getting-started">Getting Started</a> ·
   <a href="#technical-challenges--solutions">Technical Deep-Dive</a> ·
@@ -181,7 +193,7 @@ npm run build     # Strict tsc type-check + production build
 | **Static analysis** | ESLint + `react-hooks` rules | Hook correctness, dead code |
 | **Unit tests** | Vitest | Deterministic core logic (weights, wheel, ranking, import) |
 
-These three commands are self-contained and CI-ready: they form the quality gate a GitHub Actions pipeline would run on each pull request.
+A [GitHub Actions workflow](.github/workflows/ci.yml) runs these three commands on every push and pull request to `main`, so the same quality gate guards the branch.
 
 ---
 
